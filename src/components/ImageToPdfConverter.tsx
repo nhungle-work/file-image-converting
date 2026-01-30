@@ -4,7 +4,7 @@ import { FileDropZone } from './FileDropZone';
 import { ConversionProgress } from './ConversionProgress';
 import { ConversionResults } from './ConversionResults';
 import { Button } from '@/components/ui/button';
-import { imagesToPdf, cleanupUrls, type ConversionProgress as ProgressType, type ConvertedFile } from '@/lib/converters';
+import { imagesToPdf, cleanupUrls, SUPPORTED_IMAGE_FORMATS, type ConversionProgress as ProgressType, type ConvertedFile } from '@/lib/converters';
 import { Wand2, ArrowUp, ArrowDown, GripVertical } from 'lucide-react';
 
 export function ImageToPdfConverter() {
@@ -14,10 +14,13 @@ export function ImageToPdfConverter() {
   const [results, setResults] = useState<ConvertedFile[]>([]);
 
   const handleFilesSelected = useCallback((newFiles: File[]) => {
-    const imageFiles = newFiles.filter(f => 
-      f.type.startsWith('image/') && 
-      (f.type === 'image/png' || f.type === 'image/jpeg' || f.type === 'image/jpg' || f.type === 'image/webp')
-    );
+    const imageFiles = newFiles.filter(f => {
+      const type = f.type.toLowerCase();
+      const name = f.name.toLowerCase();
+      // Check by MIME type or file extension for HEIC/HEIF
+      return SUPPORTED_IMAGE_FORMATS.includes(type) || 
+             name.endsWith('.heic') || name.endsWith('.heif');
+    });
     if (imageFiles.length > 0) {
       setFiles(prev => [...prev, ...imageFiles]);
       setResults([]);
@@ -82,13 +85,13 @@ export function ImageToPdfConverter() {
             className="space-y-6"
           >
             <FileDropZone
-              accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
+              accept=".png,.jpg,.jpeg,.webp,.heic,.heif,image/png,image/jpeg,image/webp,image/heic,image/heif"
               multiple
               onFilesSelected={handleFilesSelected}
               files={[]}
               onRemoveFile={() => {}}
               title="Kéo thả ảnh vào đây"
-              description="PNG, JPG, WEBP • Chọn nhiều ảnh cùng lúc"
+              description="PNG, JPG, WEBP, HEIC, HEIF • Chọn nhiều ảnh cùng lúc"
               icon="image"
             />
 

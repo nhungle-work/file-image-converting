@@ -1,8 +1,19 @@
 import { pdfjsLib } from './pdfWorker';
 import { PDFDocument } from 'pdf-lib';
 import JSZip from 'jszip';
+import heic2any from 'heic2any';
 
 export type ImageFormat = 'png' | 'jpeg';
+
+// Supported image formats for conversion
+export const SUPPORTED_IMAGE_FORMATS = [
+  'image/png',
+  'image/jpeg', 
+  'image/jpg',
+  'image/webp',
+  'image/heic',
+  'image/heif'
+];
 
 export interface ConversionProgress {
   current: number;
@@ -14,6 +25,24 @@ export interface ConvertedFile {
   name: string;
   blob: Blob;
   url: string;
+}
+
+// Convert HEIC/HEIF to JPEG
+async function convertHeicToJpeg(file: File): Promise<Blob> {
+  const result = await heic2any({
+    blob: file,
+    toType: 'image/jpeg',
+    quality: 0.92
+  });
+  return Array.isArray(result) ? result[0] : result;
+}
+
+// Check if file is HEIC/HEIF
+function isHeicFile(file: File): boolean {
+  const type = file.type.toLowerCase();
+  const name = file.name.toLowerCase();
+  return type === 'image/heic' || type === 'image/heif' || 
+         name.endsWith('.heic') || name.endsWith('.heif');
 }
 
 // PDF to Images conversion
@@ -84,19 +113,32 @@ export async function imagesToPdf(
       status: `Đang xử lý ảnh ${i + 1}/${files.length}...`
     });
 
-    const arrayBuffer = await file.arrayBuffer();
+    let processedFile = file;
+    
+    // Convert HEIC/HEIF to JPEG first
+    if (isHeicFile(file)) {
+      onProgress?.({
+        current: i + 1,
+        total: files.length,
+        status: `Đang chuyển đổi HEIC/HEIF ${i + 1}/${files.length}...`
+      });
+      const jpegBlob = await convertHeicToJpeg(file);
+      processedFile = new File([jpegBlob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+    }
+    
+    const arrayBuffer = await processedFile.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
     
     let image;
-    const fileType = file.type.toLowerCase();
+    const fileType = processedFile.type.toLowerCase();
     
     if (fileType === 'image/png') {
       image = await pdfDoc.embedPng(uint8Array);
     } else if (fileType === 'image/jpeg' || fileType === 'image/jpg') {
       image = await pdfDoc.embedJpg(uint8Array);
     } else {
-      // For other formats, convert to PNG via canvas
-      const imgElement = await loadImage(file);
+      // For other formats (WEBP, etc.), convert to PNG via canvas
+      const imgElement = await loadImage(processedFile);
       const canvas = document.createElement('canvas');
       canvas.width = imgElement.width;
       canvas.height = imgElement.height;

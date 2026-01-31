@@ -12,7 +12,7 @@ import { Wand2 } from 'lucide-react';
 
 export function PdfToImageConverter() {
   const [files, setFiles] = useState<File[]>([]);
-  const [format, setFormat] = useState<ImageFormat>('png');
+  const [format, setFormat] = useState<ImageFormat>('jpg');
   const [quality, setQuality] = useState([92]);
   const [isConverting, setIsConverting] = useState(false);
   const [progress, setProgress] = useState<ProgressType | null>(null);
@@ -109,10 +109,14 @@ export function PdfToImageConverter() {
                       <RadioGroupItem value="jpg" id="jpg" />
                       <Label htmlFor="jpg" className="font-medium cursor-pointer">JPG</Label>
                     </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="jpeg" id="jpeg" />
+                      <Label htmlFor="jpeg" className="font-medium cursor-pointer">JPEG</Label>
+                    </div>
                   </RadioGroup>
                 </div>
 
-                {format === 'jpg' && (
+                {(format === 'jpg' || format === 'jpeg') && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}

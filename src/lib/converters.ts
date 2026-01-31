@@ -80,7 +80,7 @@ export async function pdfToImages(
     }).promise;
 
     const mimeType = format === 'png' ? 'image/png' : 'image/jpeg';
-    const extension = format === 'jpeg' ? 'jpg' : format;
+    const extension = format;
     const blob = await new Promise<Blob>((resolve) => {
       canvas.toBlob((b) => resolve(b!), mimeType, quality);
     });

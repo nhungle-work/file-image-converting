@@ -33,8 +33,7 @@ const Index = () => {
           </h1>
           
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Công cụ chuyển đổi miễn phí, bảo mật 100%. 
-            File của bạn không bao giờ rời khỏi trình duyệt.
+            Công cụ chuyển đổi miễn phí, bảo mật 100%.
           </p>
         </motion.div>
 

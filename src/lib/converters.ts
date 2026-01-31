@@ -75,7 +75,8 @@ export async function pdfToImages(
 
     await page.render({
       canvasContext: context,
-      viewport: viewport
+      viewport: viewport,
+      canvas: canvas
     }).promise;
 
     const mimeType = format === 'png' ? 'image/png' : 'image/jpeg';

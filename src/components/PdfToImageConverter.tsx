@@ -106,13 +106,13 @@ export function PdfToImageConverter() {
                       <Label htmlFor="png" className="font-medium cursor-pointer">PNG</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="jpeg" id="jpeg" />
-                      <Label htmlFor="jpeg" className="font-medium cursor-pointer">JPEG</Label>
+                      <RadioGroupItem value="jpg" id="jpg" />
+                      <Label htmlFor="jpg" className="font-medium cursor-pointer">JPG</Label>
                     </div>
                   </RadioGroup>
                 </div>
 
-                {format === 'jpeg' && (
+                {format === 'jpg' && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}

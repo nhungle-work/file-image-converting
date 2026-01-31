@@ -3,7 +3,7 @@ import { PDFDocument } from 'pdf-lib';
 import JSZip from 'jszip';
 import heic2any from 'heic2any';
 
-export type ImageFormat = 'png' | 'jpeg';
+export type ImageFormat = 'png' | 'jpeg' | 'jpg';
 
 // Supported image formats for conversion
 export const SUPPORTED_IMAGE_FORMATS = [
@@ -80,14 +80,15 @@ export async function pdfToImages(
     }).promise;
 
     const mimeType = format === 'png' ? 'image/png' : 'image/jpeg';
+    const extension = format === 'jpeg' ? 'jpg' : format;
     const blob = await new Promise<Blob>((resolve) => {
       canvas.toBlob((b) => resolve(b!), mimeType, quality);
     });
 
     const baseName = file.name.replace(/\.pdf$/i, '');
     const fileName = totalPages > 1 
-      ? `${baseName}_trang_${i}.${format}`
-      : `${baseName}.${format}`;
+      ? `${baseName}_trang_${i}.${extension}`
+      : `${baseName}.${extension}`;
 
     results.push({
       name: fileName,
